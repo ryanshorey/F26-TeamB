@@ -22,3 +22,31 @@ test('displays error message for invalid login', async () => {
   userEvent.click(screen.getByRole('button', { name: /login/i }));
   expect(await screen.findByRole('status')).toBeInTheDocument();
 });
+
+
+/*
+User File Selection Cancellation(#215)
+This test checks that cancelling file selection does not 
+store a new file in the browser.
+The file upload feature has not been implemented yet
+so this test will need to be updated and verified once that's done 
+ */
+test('does not store a new file when user cancels file selection', async () => {
+  render(<App />);
+
+  // find the file selection input
+  const fileInput = screen.queryByLabelText(/upload file/i);
+  expect(fileInput).not.toBeNull();
+
+  // record stroage before file selection
+  const storageBefore = { ...localStorage };
+
+  // simulate selecting no file
+  userEvent.upload(fileInput, []);
+
+  // verify no file was selected
+  expect(fileInput.files).toHaveLength(0);
+
+  // verify no new file stored
+  expect({ ...localStorage }).toEqual(storageBefore);
+});
